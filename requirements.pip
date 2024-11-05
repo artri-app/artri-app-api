@@ -1,0 +1,8 @@
+django
+djangorestframework
+djangorestframework-simplejwt
+black
+isort
+pep8-naming
+flake8-docstrings
+drf-yasg
