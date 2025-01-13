@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "authentication",
     "drf_yasg",
+    'django_rest_passwordreset',
+    'artri_app_api',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +58,10 @@ ROOT_URLCONF = "artri_app_api.urls"
 
 REST_FRAMEWORK = { 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' }
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 VENV_PATH = os.path.dirname(BASE_DIR)
@@ -64,7 +70,7 @@ STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
 TEMPLATES = [
 {
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'DIRS': [],
+    'DIRS': [os.path.join(BASE_DIR, 'templates'),os.path.join(BASE_DIR, 'artri_app_api/templates'),],
     'APP_DIRS': True,
     'OPTIONS': {
         'context_processors': [
