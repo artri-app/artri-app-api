@@ -4,8 +4,6 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     birth_date = models.DateField(null=True)
@@ -13,7 +11,7 @@ class User(AbstractUser):
     height = models.FloatField(null=True)
 
     def __str__(self):
-        return self.email
+        return self.username
     
 class remedy(models.Model):
     DAYS_OF_WEEK = [
@@ -25,9 +23,10 @@ class remedy(models.Model):
         ('Saturday', 'Sábado'),
         ('Sunday', 'Domingo')
     ]
-
+ 
     name = models.CharField(max_length=50)
     description = models.TextField()
+    quantity = models.IntegerField()
     days_of_week = models.CharField(max_length=9, choices=DAYS_OF_WEEK)
     hour = models.TimeField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
