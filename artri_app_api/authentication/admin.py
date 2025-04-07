@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, remedy
+from .models import User, Remedy
 
 # Configuração para o model User (customizado)
 class CustomUserAdmin(UserAdmin):
@@ -25,4 +25,4 @@ class RemedyAdmin(admin.ModelAdmin):
 
 # Registra os modelos no Admin
 admin.site.register(User, CustomUserAdmin)
-admin.site.register(remedy, RemedyAdmin)
+admin.site.register(Remedy, RemedyAdmin)
