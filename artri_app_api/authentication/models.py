@@ -65,3 +65,12 @@ class TrainingReport(models.Model):
 
     def __str__(self):
         return f'{self.training.name} - {self.date}'
+    
+class DailyPainReport(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    pain_level = models.IntegerField()# 0-10
+    pain_location = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.date}'
