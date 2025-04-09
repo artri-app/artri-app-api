@@ -34,7 +34,7 @@ class Remedy(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     quantity = models.IntegerField()
-    days_of_week = models.Choices(choices=DAYS_OF_WEEK, default='Monday')
+    days_of_week = models.CharField(choices=DAYS_OF_WEEK, max_length=9, default='Monday')
     hour = models.TimeField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -45,7 +45,7 @@ class Exercise(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     tutorial_link = models.URLField()
-    difficulty = models.Choices(choices=DIFFICULTY, default='Easy')
+    difficulty = models.CharField(choices=DIFFICULTY, default='Easy')
     def __str__(self):
         return self.name
     
@@ -53,7 +53,7 @@ class Training(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     exercises = models.ManyToManyField(Exercise)
-    difficulty = models.Choices(choices=DIFFICULTY, default='Easy')
+    difficulty = models.CharField(choices=DIFFICULTY, default='Easy')
 
     def __str__(self):
         return self.name

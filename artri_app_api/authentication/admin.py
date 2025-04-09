@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Remedy
+from .models import User, Remedy, TrainingReport, DailyPainReport
 
 # Configuração para o model User (customizado)
 class CustomUserAdmin(UserAdmin):
@@ -23,6 +23,21 @@ class RemedyAdmin(admin.ModelAdmin):
     # Campos de busca
     search_fields = ("name", "description")
 
-# Registra os modelos no Admin
+class TrainingReportAdmin(admin.ModelAdmin):
+    list_display = ("user", "training", "date")
+    
+    list_filter = ("user", "training", "date")
+    
+    search_fields = ("user__username", "training__name")
+
+class DailyPainReportAdmin(admin.ModelAdmin):
+    list_display = ("user", "date", "pain_level", "pain_location")
+    
+    list_filter = ("user", "date", "pain_level")
+    
+    search_fields = ("user__username", "pain_location")
+
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Remedy, RemedyAdmin)
+admin.site.register(TrainingReport, TrainingReportAdmin)
+admin.site.register(DailyPainReport, DailyPainReportAdmin)

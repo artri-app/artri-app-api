@@ -7,6 +7,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
+from rest_framework import generics
+from .models import Remedy, Exercise, Training, TrainingReport, DailyPainReport
+from .serializers import RemedySerializer, ExerciseSerializer, TrainingSerializer, TrainingReportSerializer, DailyPainReportSerializer
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
@@ -59,3 +62,23 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     )
     msg.attach_alternative(email_html_message, "text/html")
     msg.send()
+
+class RemedyListCreateView(generics.ListCreateAPIView):
+    queryset = Remedy.objects.all()
+    serializer_class = RemedySerializer
+
+class ExerciseListCreateView(generics.ListCreateAPIView):
+    queryset = Exercise.objects.all()
+    serializer_class = ExerciseSerializer
+
+class TrainingListCreateView(generics.ListCreateAPIView):
+    queryset = Training.objects.all()
+    serializer_class = TrainingSerializer
+
+class TrainingReportListCreateView(generics.ListCreateAPIView):
+    queryset = TrainingReport.objects.all()
+    serializer_class = TrainingReportSerializer
+
+class DailyPainReportListCreateView(generics.ListCreateAPIView):
+    queryset = DailyPainReport.objects.all()
+    serializer_class = DailyPainReportSerializer
