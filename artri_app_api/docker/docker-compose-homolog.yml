@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  artriapp-db:
+    restart: unless-stopped
+    container_name: "artriapp-db-homolog"
+    image: postgres:16
+    environment:
+      - POSTGRES_DB=artriapp
+      - POSTGRES_USER=artriapp
+      - POSTGRES_PASSWORD=artriapp
+    volumes:
+      - artriapp-db:/var/lib/postgresql/data
+
+  artriapp-cache:
+    restart: unless-stopped
+    container_name: "artriapp-cache-homolog"
+    image: redis:7
+    volumes:
+      - artriapp-cache:/data
+
+  artriapp-django:
+    restart: unless-stopped
+    container_name: "artriapp-homolog"
+    build: 
+      context: ..
+      dockerfile: ./docker/django/django.Dockerfile
+      args:
+        ENV: production
+    entrypoint: ["bash", "./docker/bin/deploy.sh"]
+    env_file:
+      - ./django/artriapp.env
+    volumes:
+      - artriapp-django-run:/var/run/
+      - artriapp-django-media:/opt/artriapp/artriapp/media/
+    depends_on:
+      - artriapp-db
+      - artriapp-cache
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+#  artriapp-celery:
+#    restart: unless-stopped
+#    container_name: "artriapp-celery-homolog"
+#    build:
+#      context: ..
+#      dockerfile: ./docker/django/django.Dockerfile
+#      args:
+#        ENV: production
+#    env_file:
+#      - ./django/artriapp.env
+#    command: >
+#      sh -c "celery -A artriapp worker -n artriapp-worker --loglevel=INFO -E &
+#             celery -A artriapp beat --loglevel=INFO"
+#    depends_on:
+#      - artriapp-django
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
+
+  artriapp-nginx:
+    restart: unless-stopped
+    container_name: "artriapp-nginx-homolog"
+    build: 
+      context: ../../
+      dockerfile: ./artri_app_api/docker/nginx/nginx.Dockerfile
+      args:
+        ENV: production
+    volumes:
+      - artriapp-django-run:/var/run/
+      - artriapp-django-media:/opt/artriapp/artriapp/media/
+    depends_on:
+      - artriapp-django
+    ports:
+      - "80:80"
+
+volumes:
+  artriapp-db:
+  artriapp-cache:
+  artriapp-django-run:
+  artriapp-django-media:
+    driver: local
