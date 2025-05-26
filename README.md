@@ -16,12 +16,12 @@ Clone o repositório
 
 ```bash
 git clone https://github.com/artri-app/artri-app-api
-cd artri-app-api
+cd artri_app_api
 
 python3 -m venv venv
 source venv/bin/activate
 
-pip install -r requirements.txt
+pip install -r requirements.pip
 
 python manage.py migrate
 
