@@ -74,3 +74,30 @@ class DailyPainReport(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.date}'
+    
+class DailySleepReport(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    sleep_duration = models.IntegerField()  # in hours
+    sleep_quality = models.CharField(max_length=50)  # e.g., 'Good', 'Fair', 'Poor'
+
+    def __str__(self):
+        return f'{self.user.username} - {self.date}'
+    
+class DailySwellingReport(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    swelling_level = models.IntegerField()  # 0-10
+    swelling_location = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.date}'
+
+class DailyFatigueReport(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    fatigue_level = models.IntegerField()  # 0-10
+    fatigue_description = models.TextField()
+
+    def __str__(self):
+        return f'{self.user.username} - {self.date}'
