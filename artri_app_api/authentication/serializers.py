@@ -1,6 +1,6 @@
 # authentication/serializers.py
 from rest_framework import serializers
-from .models import Remedy, Exercise, Training, TrainingReport, DailyPainReport
+from .models import Remedy, Exercise, Training, TrainingReport, DailyPainReport, User
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -30,4 +30,26 @@ class DailyPainReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyPainReport
         fields = '__all__'  # ou especifique os campos que deseja incluir
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            'username', 'email', 'password', 'first_name', 'last_name', 'birth_date', 'weight', 'height'
+        ]
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            birth_date=validated_data.get('birth_date', None),
+            weight=validated_data.get('weight', None),
+            height=validated_data.get('height', None),
+        )
+        return user
 

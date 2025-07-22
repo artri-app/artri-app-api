@@ -2,13 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
-from .serializers import LoginSerializer
+from .serializers import LoginSerializer, UserRegistrationSerializer
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
 from rest_framework import generics
-from .models import Remedy, Exercise, Training, TrainingReport, DailyPainReport
+from .models import Remedy, Exercise, Training, TrainingReport, DailyPainReport, User
 from .serializers import RemedySerializer, ExerciseSerializer, TrainingSerializer, TrainingReportSerializer, DailyPainReportSerializer
 
 from django_rest_passwordreset.signals import reset_password_token_created
@@ -82,3 +82,7 @@ class TrainingReportListCreateView(generics.ListCreateAPIView):
 class DailyPainReportListCreateView(generics.ListCreateAPIView):
     queryset = DailyPainReport.objects.all()
     serializer_class = DailyPainReportSerializer
+
+class UserRegistrationView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRegistrationSerializer
