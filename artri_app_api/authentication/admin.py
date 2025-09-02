@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Remedy, TrainingReport, DailyPainReport
+from .models import User, Remedy, TrainingReport, DailyPainReport, Exercise, Training, DailySleepReport, DailySwellingReport, DailyFatigueReport
 
 # Configuração para o model User (customizado)
 class CustomUserAdmin(UserAdmin):
@@ -23,6 +23,41 @@ class RemedyAdmin(admin.ModelAdmin):
     # Campos de busca
     search_fields = ("name", "description")
 
+class ExerciseAdmin(admin.ModelAdmin):
+    list_display = ("name", "difficulty")
+
+    list_filter = ("difficulty",)
+
+    search_fields = ("name", "description")
+
+class TrainingAdmin(admin.ModelAdmin):
+    list_display = ("name", "difficulty")
+
+    list_filter = ("difficulty",)
+
+    search_fields = ("name", "description")
+
+class DailySleepReportAdmin(admin.ModelAdmin):
+    list_display = ("user", "date", "sleep_duration", "sleep_quality")
+
+    list_filter = ("user", "date", "sleep_quality")
+
+    search_fields = ("user__username",)
+
+class DailySwellingReportAdmin(admin.ModelAdmin):
+    list_display = ("user", "date", "swelling_level", "swelling_location")
+
+    list_filter = ("user", "date", "swelling_level")
+
+    search_fields = ("user__username", "swelling_location")
+
+class DailyFatigueReportAdmin(admin.ModelAdmin):
+    list_display = ("user", "date", "fatigue_level")
+
+    list_filter = ("user", "date", "fatigue_level")
+    
+    search_fields = ("user__username", "fatigue_description")
+
 class TrainingReportAdmin(admin.ModelAdmin):
     list_display = ("user", "training", "date")
     
@@ -41,3 +76,8 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(Remedy, RemedyAdmin)
 admin.site.register(TrainingReport, TrainingReportAdmin)
 admin.site.register(DailyPainReport, DailyPainReportAdmin)
+admin.site.register(Exercise, ExerciseAdmin)
+admin.site.register(Training, TrainingAdmin)
+admin.site.register(DailySleepReport, DailySleepReportAdmin)
+admin.site.register(DailySwellingReport, DailySwellingReportAdmin)
+admin.site.register(DailyFatigueReport, DailyFatigueReportAdmin)
