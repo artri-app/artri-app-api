@@ -161,11 +161,13 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",          # Para seu ambiente de desenvolvimento local
-    "http://200.136.215.174",         # Para o acesso via IP do servidor
-    # "https://seu-dominio-real.com", # Quando tiver um domínio, adicione-o aqui
-]
+CORS_ALLOW_ALL_ORIGINS = True
+
+#CORS_ALLOWED_ORIGINS = [
+#    "http://localhost:3000",          
+#    "http://200.136.215.174",         
+#    # "https://dominio-real.com"
+#]
 
 try:
     from .local_settings import *
