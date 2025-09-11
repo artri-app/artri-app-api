@@ -14,23 +14,6 @@ from .serializers import RemedySerializer, ExerciseSerializer, TrainingSerialize
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
-class LoginView(APIView):
-    @swagger_auto_schema(request_body=LoginSerializer)
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            username = serializer.validated_data['username']
-            password = serializer.validated_data['password']
-
-            user = authenticate(username=username, password=password)
-
-            if user is not None:
-                return Response({"message": "Login successful!"}, status=status.HTTP_200_OK)
-            else:
-                return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):

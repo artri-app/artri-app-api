@@ -3,7 +3,6 @@ from .views import LoginView, RemedyListCreateView, ExerciseListCreateView, Trai
 from django.urls import path, include
 
 urlpatterns = [
-    path('login/', LoginView.as_view(), name='login'),
     path('register/', UserRegistrationView.as_view(), name='user-register'),
     path('remedies/', RemedyListCreateView.as_view(), name='remedy-list-create'),
     path('exercises/', ExerciseListCreateView.as_view(), name='exercise-list-create'),
