@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
 from .serializers import LoginSerializer, UserRegistrationSerializer
+from drf_yasg.utils import swagger_auto_schema
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
@@ -14,6 +15,7 @@ from .serializers import RemedySerializer, ExerciseSerializer, TrainingSerialize
 from django_rest_passwordreset.signals import reset_password_token_created
 
 class LoginView(APIView):
+    @swagger_auto_schema(request_body=LoginSerializer)
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
