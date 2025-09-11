@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import LoginView, RemedyListCreateView, ExerciseListCreateView, TrainingListCreateView, TrainingReportListCreateView, DailyPainReportListCreateView, UserRegistrationView
+from .views import RemedyListCreateView, ExerciseListCreateView, TrainingListCreateView, TrainingReportListCreateView, DailyPainReportListCreateView, UserRegistrationView
 from django.urls import path, include
 
 urlpatterns = [
