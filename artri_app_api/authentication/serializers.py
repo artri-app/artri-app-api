@@ -10,6 +10,7 @@ class RemedySerializer(serializers.ModelSerializer):
     class Meta:
         model = Remedy
         fields = '__all__'
+        read_only_fields = ('user',)
 
 class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,11 +26,13 @@ class TrainingReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingReport
         fields = '__all__'
+        read_only_fields = ('user',)
 
 class DailyPainReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyPainReport
-        fields = '__all__'  # ou especifique os campos que deseja incluir
+        fields = '__all__'
+        read_only_fields = ('user',)
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -52,4 +55,3 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             height=validated_data.get('height', None),
         )
         return user
-
