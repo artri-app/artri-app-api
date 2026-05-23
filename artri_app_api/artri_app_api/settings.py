@@ -73,7 +73,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+#STATICFILES_DIRS = [os.path.join(BASE_DIR + "files/", 'static')]
 VENV_PATH = os.path.dirname(BASE_DIR)
 STATIC_ROOT = os.path.join(VENV_PATH, 'static_root')
 
@@ -109,7 +109,7 @@ WSGI_APPLICATION = "artri_app_api.wsgi.application"
 
 DATABASES = {
     "default": dj_database_url.config(
-        default=config("DATABASE_URL", default="postgres://artriapp:artriapp@artriapp-db:5432/artriapp"),
+        default=config("DATABASE_URL", default="postgres://artriapp:artriapp@artriapp-db-development:5432/artriapp"),
         engine="django_prometheus.db.backends.postgresql",
         conn_max_age=0,
     )
@@ -178,3 +178,27 @@ try:
     from .local_settings import *
 except ImportError:
     pass
+
+
+ALLOWED_HOSTS = ['*']
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'myproject',
+        'USER': 'myprojectuser',
+        'PASSWORD': 'teste',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+
+STATIC_URL = 'static/'
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+import os
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
