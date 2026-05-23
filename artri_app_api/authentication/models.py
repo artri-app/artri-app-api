@@ -42,10 +42,16 @@ class Remedy(models.Model):
         return self.name
     
 class Exercise(models.Model):
-    name = models.CharField(max_length=50)
-    description = models.TextField()
+    name = models.CharField(max_length=100) 
+    
+    description = models.TextField() 
+    
+    sets_reps = models.CharField(max_length=50, null=True, blank=True)
+    rest_time = models.CharField(max_length=50, null=True, blank=True)
+    
     tutorial_link = models.URLField()
     difficulty = models.CharField(choices=DIFFICULTY, default='Easy')
+
     def __str__(self):
         return self.name
     
