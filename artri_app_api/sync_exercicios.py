@@ -8,60 +8,84 @@ django.setup()
 
 from authentication.models import Exercise
 
-# Mapeamento para o ENUM do Django
+# Mapeamento expandido para aceitar os novos termos que você usou na planilha
 diff_map = {
-    'Iniciante': 'Easy',
-    'Intermediário': 'Medium',
-    'Avançado': 'Hard'
+    'INICIANTE': 'Easy',
+    'FÁCIL': 'Easy',
+    'FACIL': 'Easy',
+    'INTERMEDIÁRIO': 'Medium',
+    'INTERMEDIARIO': 'Medium',
+    'MÉDIO': 'Medium',
+    'AVANÇADO': 'Hard',
+    'AVANCADO': 'Hard',
+    'DIFÍCIL': 'Hard',
+    'DIFICIL': 'Hard',
 }
 
 def sync_exercises(csv_path):
     print("Iniciando sincronização inteligente de exercícios...")
     
-    with open(csv_path, mode='r', encoding='utf-8') as file:
+    # utf-8-sig remove caracteres invisíveis (BOM) que o Excel coloca no início de arquivos CSV
+    with open(csv_path, mode='r', encoding='utf-8-sig') as file:
         reader = csv.DictReader(file)
+        
+        # Remove espaços sobrando no começo ou fim dos nomes das colunas
+        reader.fieldnames = [str(field).strip() for field in reader.fieldnames if field]
+        
         atualizados = 0
         criados = 0
 
         for row in reader:
-            clean_name = row['Exercício'].strip()
-            diff_pt = row['Dificuldade'].strip()
+            # Limpa chaves e valores para evitar erros de digitação (ex: " Dificil " vira "Dificil")
+            clean_row = {str(k).strip(): str(v).strip() for k, v in row.items() if k is not None}
             
-            # Limpeza de dados
-            link = row['Link do Vídeo'].strip()
-            obs = row['Instruções / Observações'].strip()
+            # Pula linhas completamente vazias
+            if not clean_row.get('Nome do exercício'):
+                continue
+
+            clean_name = clean_row['Nome do exercício']
+            diff_pt = clean_row.get('Dificuldade', 'Fácil').upper()
+            
+            link = clean_row.get('Link do vídeo', '')
+            obs = clean_row.get('Instruções/Observações', '')
+            sets = clean_row.get('Séries e Repetições', '')
+            rest = clean_row.get('Descanso', '')
+
+            # Remove links genéricos/inválidos que vieram da tabela
             if 'Mesmo' in link or 'Mesmo' in obs:
-                link = '' # Remove links inválidos copiados de tabelas textuais
+                link = '' 
                 
             db_difficulty = diff_map.get(diff_pt, 'Easy')
 
-            # Tática Ninja: Recriar o nome antigo para dar o "match" no banco atual
-            legacy_name = f"{clean_name} - {diff_pt.upper()}"
+            # Tática: O banco antigo usava " - INICIANTE". A planilha nova usa "Fácil".
+            # Vamos traduzir para o termo antigo para conseguir achar o ID correto no banco.
+            legacy_diff = "INICIANTE"
+            if db_difficulty == "Medium": legacy_diff = "INTERMEDIÁRIO"
+            if db_difficulty == "Hard": legacy_diff = "AVANÇADO"
             
-            # Busca pelo nome antigo com sufixo
-            exercise = Exercise.objects.filter(name=legacy_name).first()
-            
+            # Tenta encontrar o exercício com as nomenclaturas antigas ou já limpas
+            exercise = Exercise.objects.filter(name=f"{clean_name} - {legacy_diff}").first()
             if not exercise:
-                # Se não achar o antigo, tenta achar pelo nome limpo + dificuldade 
-                # (útil caso você rode esse script mais de uma vez)
-                exercise = Exercise.objects.filter(name=clean_name, difficulty=db_difficulty).first()
+                exercise = Exercise.objects.filter(name=f"{clean_name} - {legacy_diff.upper()}").first()
+            if not exercise:
+                exercise = Exercise.objects.filter(name=clean_name).first()
 
             if exercise:
-                # ATUALIZA MANTENDO O ID (Não quebra os treinos)
-                exercise.name = clean_name # Remove o sufixo "- INICIANTE" do banco
-                exercise.sets_reps = row.get('Séries / Repetições', '').strip()
-                exercise.rest_time = row.get('Descanso', '').strip()
+                # ATUALIZA MANTENDO O ID
+                exercise.name = clean_name # Salva o nome limpo de vez
+                exercise.sets_reps = sets
+                exercise.rest_time = rest
                 exercise.description = obs
                 exercise.tutorial_link = link
                 exercise.difficulty = db_difficulty
                 exercise.save()
                 atualizados += 1
             else:
-                # Se realmente não existir, cria um novo
+                # Se não achar nada parecido, cria um novo
                 Exercise.objects.create(
                     name=clean_name,
-                    sets_reps=row.get('Séries / Repetições', '').strip(),
-                    rest_time=row.get('Descanso', '').strip(),
+                    sets_reps=sets,
+                    rest_time=rest,
                     description=obs,
                     tutorial_link=link,
                     difficulty=db_difficulty
@@ -71,5 +95,4 @@ def sync_exercises(csv_path):
     print(f"Sucesso! {atualizados} atualizados (relações mantidas) e {criados} novos criados.")
 
 if __name__ == '__main__':
-    # Certifique-se de que o nome do arquivo bate exatamente
     sync_exercises('Exercicios.csv')
