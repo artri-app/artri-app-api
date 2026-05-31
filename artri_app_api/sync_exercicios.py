@@ -72,4 +72,4 @@ def sync_exercises(csv_path):
 
 if __name__ == '__main__':
     # Certifique-se de que o nome do arquivo bate exatamente
-    sync_exercises('Exercícios ArtriApp - Exercícios.csv')
+    sync_exercises('Exercicios.csv')
