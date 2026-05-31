@@ -55,10 +55,19 @@ class Exercise(models.Model):
     def __str__(self):
         return self.name
     
+class TrainingExercise(models.Model):
+    training = models.ForeignKey('Training', on_delete=models.CASCADE)
+    exercise = models.ForeignKey('Exercise', on_delete=models.CASCADE)
+    order = models.PositiveIntegerField(default=0) # Controla a ordem (0, 1, 2...)
+
+    class Meta:
+        ordering = ['order'] # O Django sempre vai devolver os exercícios ordenados por este campo
+
 class Training(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
-    exercises = models.ManyToManyField(Exercise)
+    # Adicionamos o 'through' para avisar o Django que a relação agora tem uma ordem
+    exercises = models.ManyToManyField(Exercise, through=TrainingExercise)
     difficulty = models.CharField(choices=DIFFICULTY, default='Easy')
 
     def __str__(self):
