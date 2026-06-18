@@ -2,7 +2,7 @@
 
 Este repositório contém o código do back-end do aplicativo **ArtriApp**, desenvolvido utilizando Django e Django Rest Framework. A API é responsável pelo gerenciamento de usuários, diário de dor/fadiga/sono, checklist de medicamentos e recomendação de exercícios para o aplicativo mobile.
 
-Este projeto é parte da disciplina de Desenvolvimento Mobile. Siga o guia abaixo para executar a API localmente na sua máquina para realizar testes e implementações de front-end.
+Este projeto é parte da disciplina de Desenvolvimento Mobile. Siga o guia abaixo para executar a API localmente na sua máquina para realizar testes e integrar com o seu front-end em Flutter.
 
 ---
 
@@ -10,24 +10,113 @@ Este projeto é parte da disciplina de Desenvolvimento Mobile. Siga o guia abaix
 * **Linguagem:** Python 3.12+
 * **Framework:** Django 5.x
 * **API:** Django Rest Framework (DRF)
-* **Banco de Dados (Local):** SQLite (Padrão de desenvolvimento)
+* **Banco de Dados:** PostgreSQL
 * **Documentação da API:** Swagger/ReDoc (drf-yasg)
 
 ---
 
-## 🚀 Como Executar Localmente (Modo Desenvolvimento)
+## ⚙️ Passo 0: Configuração de Variáveis de Ambiente (Obrigatório)
 
-### 1. Clonar o repositório
-Abra o seu terminal e clone o projeto na sua máquina:
+Seja rodando via Docker ou Localmente, o projeto **exige** um arquivo `.env` para conectar ao banco de dados. Sem ele, a aplicação (e o Docker) irá falhar.
+
+1. Clone o repositório e entre na pasta:
 ```bash
-git clone https://github.com/artri-app/artri-app-api.git
-cd artri-app-api/artri_app_api
+   git clone [https://github.com/artri-app/artri-app-api.git](https://github.com/artri-app/artri-app-api.git)
+   cd artri-app-api/artri_app_api
+
+```
+
+2. Na pasta `docker/django/`, existe um arquivo chamado `artriapp.env.example`.
+3. Copie este arquivo para a **raiz** do projeto (onde está o `manage.py`) e renomeie-o para **`.env`** (com o ponto no início).
+4. Abra o arquivo `.env` e preencha as variáveis do banco de dados (escolha uma senha e um usuário). Exemplo:
+```env
+DEBUG=True
+SECRET_KEY=sua_chave_secreta_aqui
+DJANGO_ALLOWED_HOSTS=*
+
+# Configurações do Banco de Dados
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=artriapp_db
+DB_USER=artri_user
+DB_PASSWORD=senha_super_segura
+DB_HOST=db  # Use 'db' se for rodar via Docker, ou 'localhost' se for rodar Nativo
+DB_PORT=5432
+
+# Configurações necessárias para o contêiner do Postgres no Docker
+POSTGRES_DB=artriapp_db
+POSTGRES_USER=artri_user
+POSTGRES_PASSWORD=senha_super_segura
+
+```
+
+
+
+Escolha **APENAS UM** dos caminhos abaixo para rodar o projeto: via Docker (Recomendado) ou Localmente (Nativo).
+
+---
+
+## 🐋 Caminho 1: Execução via Docker (Recomendado)
+
+Esta é a maneira mais rápida e fácil, pois cria o banco de dados PostgreSQL automaticamente sem que você precise instalá-lo no seu computador.
+
+**Pré-requisito:** Ter o [Docker](https://www.docker.com/) e o Docker Compose instalados.
+
+### 1. Subir os contêineres
+
+Na raiz do projeto (onde está o `manage.py`), execute:
+
+```bash
+docker-compose -f docker/docker-compose-local.yml up -d --build
+
+```
+
+*(O Docker fará o download do Python, do PostgreSQL, instalará as dependências e iniciará o banco).*
+
+### 2. Configurar o Banco e Popular Dados (Seed)
+
+Com os contêineres rodando, execute os comandos por dentro do contêiner da API:
+
+```bash
+# Aplica a estrutura das tabelas no banco de dados
+docker-compose -f docker/docker-compose-local.yml exec api python manage.py migrate
+
+# Roda o script de semeadura (popula o banco com os Treinos e Exercícios)
+docker-compose -f docker/docker-compose-local.yml exec api python seed_banco.py
+
+# Cria o usuário administrador do sistema
+docker-compose -f docker/docker-compose-local.yml exec api python manage.py createsuperuser
+
+```
+
+**Tudo pronto!** A API já está rodando em `http://localhost:8000`. Pule para a seção "Endpoints".
+
+---
+
+## 💻 Caminho 2: Execução Local Nativa (Sem Docker)
+
+Siga este caminho apenas se preferir rodar os serviços diretamente na sua máquina.
+
+**Pré-requisitos Críticos:**
+
+1. **Python 3.12+** instalado.
+2. **PostgreSQL** instalado na sua máquina (ex: via pgAdmin ou instalador nativo).
+3. *(Apenas Linux)*: Você precisa das bibliotecas de desenvolvimento do Postgres para o `pip install` funcionar. Rode: `sudo apt-get install libpq-dev python3-dev gcc`.
+
+### 1. Criar o Banco de Dados no PostgreSQL
+
+Antes de rodar o projeto, abra o seu terminal do Postgres (`psql`) ou o pgAdmin e rode os seguintes comandos SQL para criar a instância que o Django usará (certifique-se de que os nomes batem com os do seu arquivo `.env`):
+
+```sql
+CREATE DATABASE artriapp_db;
+CREATE USER artri_user WITH PASSWORD 'senha_super_segura';
+ALTER ROLE artri_user SET client_encoding TO 'utf8';
+ALTER ROLE artri_user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE artri_user SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE artriapp_db TO artri_user;
 
 ```
 
 ### 2. Criar e Ativar o Ambiente Virtual (Venv)
-
-O ambiente virtual isola as dependências do projeto para que elas não entrem em conflito com outros pacotes Python na sua máquina.
 
 **No Linux/macOS:**
 
@@ -45,54 +134,34 @@ python -m venv venv
 
 ```
 
-*(Você saberá que deu certo quando a palavra `(venv)` aparecer no início da linha do terminal).*
-
 ### 3. Instalar as Dependências
 
-Com o ambiente ativado, instale os pacotes requeridos pelo Django:
+Com o ambiente ativado (você verá `(venv)` no terminal):
 
 ```bash
 pip install -r requirements.pip
 
 ```
 
+*(Se ocorrer erro nesta etapa, verifique se o PostgreSQL está corretamente instalado na sua máquina, pois a biblioteca `psycopg2` depende dele).*
 
-### 4. Configurar o Banco de Dados e Carga de Dados (Seed)
+### 4. Configurar e Popular o Banco (Seed)
 
-Nós utilizamos um script para criar e popular o banco de dados rapidamente com todos os Treinos e Exercícios de fisioterapia já ordenados.
-
-Execute os comandos abaixo na ordem exata:
+Atenção: Garanta que a variável `DB_HOST` no seu arquivo `.env` está como `localhost` nesta etapa.
 
 ```bash
-# Aplica a estrutura das tabelas no banco de dados local
 python manage.py migrate
-
-# Roda o script de semeadura (lê o arquivo CSV e popula o banco)
 python seed_banco.py
-
-```
-
-### 5. Criar o Administrador do Sistema
-
-Para acessar o painel de administração e ver os dados salvos, crie uma conta administrativa:
-
-```bash
 python manage.py createsuperuser
 
 ```
 
-*(O terminal pedirá que você digite um nome de usuário, e-mail e senha).*
-
-### 6. Rodar o Servidor
-
-Tudo pronto! Inicie o servidor local de desenvolvimento:
+### 5. Rodar o Servidor
 
 ```bash
 python manage.py runserver 0.0.0.0:8000
 
 ```
-
-*(Se estiver usando Windows, pode usar apenas `python manage.py runserver`).*
 
 ---
 
@@ -100,22 +169,6 @@ python manage.py runserver 0.0.0.0:8000
 
 Com o servidor rodando, você pode acessar os painéis através do seu navegador:
 
-* **Painel Administrativo do Django:** [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
-* **Documentação Interativa da API (Swagger):** [http://127.0.0.1:8000/api/schema/swagger-ui/](https://www.google.com/search?q=http://127.0.0.1:8000/api/schema/swagger-ui/) *(Aqui você pode testar as rotas de login, envio de métricas de diário e listagem de exercícios).*
+* **Painel Administrativo do Django:** [http://localhost:8000/admin/](https://www.google.com/search?q=http://localhost:8000/admin/)
+* **Documentação Interativa da API (Swagger):** [http://localhost:8000/api/schema/swagger-ui/](https://www.google.com/search?q=http://localhost:8000/api/schema/swagger-ui/) *(Aqui você pode testar as rotas de login, envio de métricas de diário e visualizar o formato do JSON dos exercícios).*
 
----
-
-## 🐋 Execução via Docker (Opcional)
-
-Caso prefira não configurar o Python localmente e tenha o Docker instalado:
-
-```bash
-docker-compose -f docker/docker-compose-local.yml up -d --build
-
-```
-
-Após os contêineres subirem, execute as migrações por dentro do contêiner:
-
-```bash
-docker-compose -f docker/docker-compose-local.yml exec api python manage.py migrate
-docker-compose -f docker/docker-compose-local.yml exec api python seed_banco.py
