@@ -165,6 +165,19 @@ python manage.py runserver 0.0.0.0:8000
 
 ---
 
+---
+
+## ❓ Resolução de Problemas Frequentes (FAQ)
+
+**1. O meu terminal parou na mensagem `0 static files copied... System check identified no issues`. O servidor travou?**
+> **Não! Isso não é um erro.** Essa é a mensagem de SUCESSO do Django. Significa que o servidor iniciou perfeitamente, o banco conectou e ele está esperando as suas requisições. Deixe o terminal aberto e acesse `http://localhost:8000` no seu navegador.
+
+**2. Erro: `could not translate host name "artriapp-db" to address`**
+> Esse erro ocorre se você tentou rodar o projeto localmente (sem Docker) usando a configuração padrão do `.env`. Abra o seu arquivo `.env`, encontre a linha `DATABASE_URL` e troque a palavra `artriapp-db` por `localhost`.
+
+**3. Erro no Redis ou Cache na hora de fazer login**
+> Abra o seu `.env` e certifique-se de que a variável `CACHE_ENABLED=False`. O cache exige um servidor Redis rodando. Desativando-o, o Django funcionará normalmente para testes de desenvolvimento.
+
 ## 🔗 Endpoints e Documentação
 
 Com o servidor rodando, você pode acessar os painéis através do seu navegador:
