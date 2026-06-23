@@ -15,6 +15,12 @@ services:
       - "5438:5432"
     networks:
       - artriapp-network
+    # Adicionado: Ensina o Docker a testar se o Postgres está pronto para uso
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U artriapp -d artriapp"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   artriapp-cache:
     restart: unless-stopped
@@ -24,6 +30,9 @@ services:
       - artriapp-cache:/data
     ports:
       - "6388:6379"
+    # Adicionado: Coloca a cache na mesma rede do Django
+    networks:
+      - artriapp-network
 
   artriapp-django:
     restart: unless-stopped
@@ -39,34 +48,16 @@ services:
     volumes:
       - ..:/opt/artriapp/
     depends_on:
-      - artriapp-db
-      - artriapp-cache
-    condition: service_healthy
+      artriapp-db:
+        condition: service_healthy
+      artriapp-cache:
+        condition: service_started
     ports:
       - "8000:8000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
       - artriapp-network
-
-#  artriapp-celery:
-#    restart: unless-stopped
-#    container_name: "artriapp-celery-development"
-#    build:
-#      context: ..
-#      dockerfile: ./docker/django/django.Dockerfile
-#      args:
-#        ENV: local
-#    env_file:
-#      - ./django/artriapp.env
-#    command: >
-#      sh -c "celery -A artriapp worker --loglevel=INFO -E &
-#             celery -A artriapp beat --loglevel=INFO"
-#    volumes:
-#      - ..:/opt/artriapp/
-#    depends_on:
-#      - artriapp-db
-#      - artriapp-cache
 
 volumes:
   artriapp-db:
