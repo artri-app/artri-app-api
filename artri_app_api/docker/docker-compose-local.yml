@@ -41,6 +41,7 @@ services:
     depends_on:
       - artriapp-db
       - artriapp-cache
+    condition: service_healthy
     ports:
       - "8000:8000"
     extra_hosts:
