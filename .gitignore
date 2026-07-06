@@ -59,6 +59,7 @@ file_name*
 local_settings.py
 db.sqlite3
 artri_app_api/staticfiles/
+artri_app_api/static/
 
 # Flask stuff:
 # instance/
