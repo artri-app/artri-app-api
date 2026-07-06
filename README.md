@@ -215,8 +215,9 @@ python manage.py runserver 0.0.0.0:8000
 
 Com o servidor rodando, você pode acessar os painéis através do seu navegador:
 
-* **Painel Administrativo do Django:** [http://localhost:8000/admin/](https://www.google.com/search?q=http://localhost:8000/admin/)
-* **Documentação Interativa da API (Swagger):** [http://localhost:8000/api/schema/swagger-ui/](https://www.google.com/search?q=http://localhost:8000/api/schema/swagger-ui/) *(Aqui você pode testar as rotas de login, envio de métricas de diário e visualizar o formato do JSON).*
+* **Painel Administrativo do Django:** [http://localhost:8000/admin/](http://localhost:8000/admin/)
+* **Documentação Interativa da API (Swagger):** [http://localhost:8000/swagger/](http://localhost:8000/swagger/) *(Aqui você pode testar as rotas de login, envio de métricas de diário e visualizar o formato do JSON).*
+* **Documentação Alternativa (ReDoc):** [http://localhost:8000/redoc/](http://localhost:8000/redoc/)
 
 
 
