@@ -41,16 +41,29 @@ class Remedy(models.Model):
     def __str__(self):
         return self.name
     
+CATEGORY = [
+        ('mobility_legs', 'Mobilidade - Pernas'),
+        ('mobility_arms', 'Mobilidade - Braços'),
+        ('mobility_trunk', 'Mobilidade - Tronco'),
+        ('warmup', 'Aquecimento'),
+        ('legs', 'Fortalecimento - Pernas'),
+        ('arms', 'Fortalecimento - Braços'),
+        ('trunk', 'Fortalecimento - Tronco'),
+        ('stretching', 'Alongamento'),
+    ]
+
 class Exercise(models.Model):
-    name = models.CharField(max_length=100) 
-    
-    description = models.TextField() 
-    
+    name = models.CharField(max_length=100)
+
+    description = models.TextField()
+
     sets_reps = models.CharField(max_length=50, null=True, blank=True)
     rest_time = models.CharField(max_length=50, null=True, blank=True)
-    
+
     tutorial_link = models.URLField()
     difficulty = models.CharField(choices=DIFFICULTY, default='Easy')
+    
+    category = models.CharField(choices=CATEGORY, max_length=30, null=True, blank=True)
 
     def __str__(self):
         return self.name
