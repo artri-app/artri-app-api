@@ -15,6 +15,39 @@ diff_map = {
     'DIFÍCIL': 'Hard', 'DIFICIL': 'Hard', 'AVANÇADO': 'Hard', 'AVANCADO': 'Hard'
 }
 
+# Mapeia a última parte do nome do Treino (ex.: "EXERCÍCIO PERSONALIDADO - INICIANTE - PERNAS")
+# para a category usada no fluxo de exercícios personalizados.
+category_map = {
+    'AQUECIMENTO': 'warmup',
+    'BRAÇOS': 'arms', 'BRACOS': 'arms',
+    'PERNAS': 'legs',
+    'TRONCO': 'trunk',
+    'ALONGAMENTO': 'stretching',
+}
+
+
+def derive_category(treino_name, ex_name):
+    """Retorna a category do exercício personalizado, ou None para os treinos
+    pré-determinados (Mãos/Pés/relaxamento). A MOBILIDADE, que no CSV é uma
+    categoria única, é dividida em perna/braços/tronco pelo nome do exercício."""
+    treino = treino_name.upper()
+    if 'PERSONAL' not in treino:
+        return None
+
+    part = treino.split(' - ')[-1].strip()
+    if part in category_map:
+        return category_map[part]
+
+    if part == 'MOBILIDADE':
+        name = ex_name.lower()
+        if 'tronco' in name or 'gato' in name:
+            return 'mobility_trunk'
+        if 'braço' in name or 'ombro' in name or 'punho' in name:
+            return 'mobility_arms'
+        return 'mobility_legs'
+
+    return None
+
 def reset_and_seed(csv_path):
     print("⚠️  ATENÇÃO: Apagando todos os Treinos e Exercícios antigos do banco...")
     Training.objects.all().delete()
@@ -52,12 +85,16 @@ def reset_and_seed(csv_path):
                 link = ''
                 
             db_diff = diff_map.get(diff_pt, 'Easy')
-            
+            category = derive_category(treino_name, ex_name)
+
             # 1. Cria o Exercício (usamos get_or_create para não duplicar no banco
-            # caso o mesmo exercício exato seja usado em treinos diferentes)
+            # caso o mesmo exercício exato seja usado em treinos diferentes).
+            # A category entra na chave para que um exercício personalizado não
+            # se funda com um exercício de Mãos/Pés de mesmo nome/dificuldade.
             exercise, _ = Exercise.objects.get_or_create(
                 name=ex_name,
                 difficulty=db_diff,
+                category=category,
                 defaults={
                     'sets_reps': sets,
                     'rest_time': rest,
