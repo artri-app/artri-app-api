@@ -71,8 +71,26 @@ class DailyPainReportListCreateView(generics.ListCreateAPIView):
 
 
 class ExerciseListCreateView(generics.ListCreateAPIView):
-    queryset = Exercise.objects.all()
     serializer_class = ExerciseSerializer
+
+    def get_queryset(self):
+        queryset = Exercise.objects.all()
+        params = self.request.query_params
+
+        # Fluxo de exercícios personalizados: só exercícios com categoria definida.
+        if params.get('personalized') in ('true', 'True', '1'):
+            queryset = queryset.exclude(category__isnull=True).exclude(category='')
+
+        category = params.get('category')
+        if category:
+            queryset = queryset.filter(category=category)
+
+        difficulty = params.get('difficulty')
+        if difficulty:
+            # O app envia 'easy'/'medium'/'hard'; o banco guarda 'Easy'/'Medium'/'Hard'.
+            queryset = queryset.filter(difficulty__iexact=difficulty)
+
+        return queryset
 
 
 class TrainingListCreateView(generics.ListCreateAPIView):
