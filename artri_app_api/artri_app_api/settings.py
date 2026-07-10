@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "authentication",
+    "src",
     "drf_yasg",
     'django_rest_passwordreset',
     'artri_app_api',

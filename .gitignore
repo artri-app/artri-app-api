@@ -124,4 +124,3 @@ ssh/
 *.DS_Store
 
 celerybeat-schedule.db
-src/

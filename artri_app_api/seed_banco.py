@@ -6,7 +6,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'artri_app_api.settings')
 django.setup()
 
-from authentication.models import Exercise, Training, TrainingExercise
+from src.models import Exercise, Training, TrainingExercise
 
 # Mapeamento para todas as possíveis variações que você pode digitar na planilha
 diff_map = {
