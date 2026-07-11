@@ -14,4 +14,4 @@ class DailyPainReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyPainReport
         fields = '__all__'
-        read_only_fields = ('user',)
+        read_only_fields = ('user', 'created_at')

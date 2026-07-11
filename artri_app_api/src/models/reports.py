@@ -18,6 +18,10 @@ class DailyPainReport(models.Model):
     date = models.DateField()
     pain_level = models.IntegerField()  # 0-10
     pain_location = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
         return f'{self.user.username} - {self.date}'

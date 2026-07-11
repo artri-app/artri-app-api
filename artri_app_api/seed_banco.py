@@ -1,12 +1,19 @@
 import csv
 import os
+from datetime import timedelta
+
 import django
 
 # Configura o ambiente do Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'artri_app_api.settings')
 django.setup()
 
-from src.models import Exercise, Training, TrainingExercise
+from django.utils import timezone
+
+from src.models import DailyPainReport, Exercise, Training, TrainingExercise, User
+
+# Locais de dor exibidos no seletor de membros do corpo no app.
+PAIN_LOCATIONS = ['Mãos', 'Braço', 'Ombro', 'Coluna', 'Quadril', 'Joelho', 'Tornozelo', 'Pés']
 
 # Mapeamento para todas as possíveis variações que você pode digitar na planilha
 diff_map = {
@@ -132,6 +139,42 @@ def reset_and_seed(csv_path):
     for t_name, count in training_order.items():
         print(f"   - {t_name}: {count} exercícios vinculados ordenadamente.")
 
+
+def seed_daily_pain_reports(username):
+    """Popula um histórico de dor de exemplo (últimos dias) para o usuário indicado."""
+    user = User.objects.get(username=username)
+
+    print(f"\n🩹 Recriando histórico de dor de exemplo para '{username}'...")
+    DailyPainReport.objects.filter(user=user).delete()
+
+    # (dias atrás, local, intensidade 0-10)
+    sample_entries = [
+        (6, 'Joelho', 6),
+        (5, 'Ombro', 4),
+        (4, 'Coluna', 7),
+        (3, 'Joelho', 5),
+        (2, 'Tornozelo', 3),
+        (1, 'Ombro', 6),
+        (0, 'Coluna', 8),
+    ]
+
+    now = timezone.now()
+    for days_ago, location, level in sample_entries:
+        moment = now - timedelta(days=days_ago)
+        report = DailyPainReport.objects.create(
+            user=user,
+            date=moment.date(),
+            pain_level=level,
+            pain_location=location,
+        )
+        # auto_now_add sempre grava o instante do create(); ajustamos depois
+        # via update() pra simular um histórico espalhado nos últimos dias.
+        DailyPainReport.objects.filter(pk=report.pk).update(created_at=moment)
+
+    print(f"✅ {len(sample_entries)} registros de dor criados para '{username}'.")
+
+
 if __name__ == '__main__':
     # Coloque o nome exato do seu arquivo CSV atual
     reset_and_seed('Exercícios ArtriApp - Exercícios ArtriApp - Exercícios.csv')
+    seed_daily_pain_reports('taichi1')
