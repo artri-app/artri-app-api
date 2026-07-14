@@ -34,7 +34,7 @@ class User(AbstractUser):
 class Remedy(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
-    quantity = models.IntegerField(default=1)
+    quantity = models.CharField(max_length=50, default='1')
     days_of_week = ArrayField(
         models.CharField(max_length=9, choices=DAYS_OF_WEEK),
         default=list,
