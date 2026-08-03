@@ -1,6 +1,16 @@
 # authentication/serializers.py
 from rest_framework import serializers
-from .models import Remedy, Exercise, Training, TrainingReport, DailyPainReport, User
+from .models import (
+    Remedy,
+    Exercise,
+    Training,
+    TrainingReport,
+    DailyPainReport,
+    DailySleepReport,
+    DailySwellingReport,
+    DailyFatigueReport,
+    User,
+)
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -31,6 +41,24 @@ class TrainingReportSerializer(serializers.ModelSerializer):
 class DailyPainReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyPainReport
+        fields = '__all__'
+        read_only_fields = ('user',)
+
+class DailySleepReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailySleepReport
+        fields = '__all__'
+        read_only_fields = ('user',)
+
+class DailySwellingReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailySwellingReport
+        fields = '__all__'
+        read_only_fields = ('user',)
+
+class DailyFatigueReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailyFatigueReport
         fields = '__all__'
         read_only_fields = ('user',)
 

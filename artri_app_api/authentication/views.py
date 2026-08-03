@@ -6,14 +6,27 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 
-from .models import Remedy, Exercise, Training, TrainingReport, DailyPainReport, User
+from .models import (
+    Remedy,
+    Exercise,
+    Training,
+    TrainingReport,
+    DailyPainReport,
+    DailySleepReport,
+    DailySwellingReport,
+    DailyFatigueReport,
+    User,
+)
 from .serializers import (
     UserRegistrationSerializer,
     RemedySerializer,
     ExerciseSerializer,
     TrainingSerializer,
     TrainingReportSerializer,
-    DailyPainReportSerializer
+    DailyPainReportSerializer,
+    DailySleepReportSerializer,
+    DailySwellingReportSerializer,
+    DailyFatigueReportSerializer
 )
 
 # --- VIEWS PÚBLICAS ---
@@ -68,6 +81,38 @@ class DailyPainReportListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
+class DailySleepReportListCreateView(generics.ListCreateAPIView):
+    serializer_class = DailySleepReportSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return DailySleepReport.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class DailySwellingReportListCreateView(generics.ListCreateAPIView):
+    serializer_class = DailySwellingReportSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return DailySwellingReport.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class DailyFatigueReportListCreateView(generics.ListCreateAPIView):
+    serializer_class = DailyFatigueReportSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return DailyFatigueReport.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class ExerciseListCreateView(generics.ListCreateAPIView):

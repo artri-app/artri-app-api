@@ -38,9 +38,9 @@ class TrainingAdmin(admin.ModelAdmin):
     search_fields = ("name", "description")
 
 class DailySleepReportAdmin(admin.ModelAdmin):
-    list_display = ("user", "date", "sleep_duration", "sleep_quality")
+    list_display = ("user", "date", "sleep_level", "sleep_duration", "sleep_quality")
 
-    list_filter = ("user", "date", "sleep_quality")
+    list_filter = ("user", "date", "sleep_level")
 
     search_fields = ("user__username",)
 
