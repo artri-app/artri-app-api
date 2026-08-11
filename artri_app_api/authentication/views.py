@@ -54,6 +54,14 @@ class RemedyListCreateView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
+class RemedyRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = RemedySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Remedy.objects.filter(user=self.request.user)
+
+
 class TrainingReportListCreateView(generics.ListCreateAPIView):
     serializer_class = TrainingReportSerializer
     # 1. PROTEGE A ROTA

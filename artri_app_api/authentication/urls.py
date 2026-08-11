@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (
     RemedyListCreateView,
+    RemedyRetrieveUpdateDestroyView,
     ExerciseListCreateView,
     TrainingListCreateView,
     TrainingReportListCreateView,
@@ -15,6 +16,7 @@ from django.urls import path, include
 urlpatterns = [
     path('register/', UserRegistrationView.as_view(), name='user-register'),
     path('remedies/', RemedyListCreateView.as_view(), name='remedy-list-create'),
+    path('remedies/<int:pk>/', RemedyRetrieveUpdateDestroyView.as_view(), name='remedy-detail'),
     path('exercises/', ExerciseListCreateView.as_view(), name='exercise-list-create'),
     path('trainings/', TrainingListCreateView.as_view(), name='training-list-create'),
     path('training-reports/', TrainingReportListCreateView.as_view(), name='training-report-list-create'),
